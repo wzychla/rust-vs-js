@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mandelbrot</title>
+	<script type="text/javascript">
+	        
+        var cx = 0, cy = 0, kat1 = 0, kat2 = 1;           
+        
+        var WJulia = 1024;
+        var HJulia = 1024;
+        var frame  = 0;
+        var startDate;
+    
+        var contextJulia;
+        var contextSmall;
+        var pixJulia;
+        var imgdJulia;
+
+        var iStart;
+        var iEnd;
+        var jStart;
+        var jEnd;
+
+        var iDelta;
+        var jDelta;
+        
+        function setInitialScale()
+        {
+            iStart = -1.92;
+            iEnd   = 1.92;
+            jStart = -1.92;
+            jEnd   = 1.92;
+
+            iDelta = (iEnd-iStart)/1024;
+            jDelta = (jEnd-jStart)/1024;
+
+            startDate = new Date();
+        }
+
+        function SetupMandel()
+        {	 
+            var elemJulia = document.getElementById('JuliaCanvas');
+            if (elemJulia && elemJulia.getContext)
+            {
+                contextJulia = elemJulia.getContext('2d');
+                if (contextJulia)
+                {
+                    imgdJulia = contextJulia.createImageData(WJulia, HJulia);         
+                    pixJulia = imgdJulia.data;
+                }
+            }
+
+            setInitialScale();
+          
+            /* start */
+            requestAnimationFrame( LoopMandel );
+        }
+                         
+        function LoopMandel()
+        {	 
+            kat1 += 0.0021;
+            kat2 += 0.0039;
+            cx = .681 * Math.sin(kat1);
+            cy = .626 * Math.cos(kat2);
+
+            frame++;
+            document.getElementById('fps').innerHTML = `Javascript, fps: ${1000*frame/(new Date()-startDate)}`;
+			
+            RysujMandel();	 
+            
+            requestAnimationFrame( LoopMandel );
+        }
+         
+         
+        /* tworzenie bitowego obrazu */
+        function RysujMandel()
+        {
+            /* obliczenia */
+            var wi, wj;
+            var i, j;
+
+            var iterations = 255;
+
+            var px = 0;
+            for (i = iStart, wi = 0; wi < 1024; i += iDelta, wi++)
+            {
+                var py = 0;
+                for (j = jStart, wj = 0; wj < 1024; j += jDelta, wj++)
+                {
+                    var c = 0;
+
+                    var x = cx;
+                    var y = cy;
+         
+                    while (((x*x + y*y) < 4) && (c < iterations))
+                    {
+                        [x, y] = [x * x - y * y + i, 2 * x * y + j];
+                        c++;
+                    }
+
+                    SetPixelColor( pixJulia, (py * WJulia + px) << 2, 255, 255-c, 255-c, 255 - (c/2) );
+                                        
+                    py++;
+                }
+         
+                px++;
+            }
+            
+            /* kopiowanie bitowego obrazu do context/canvas */
+            contextJulia.putImageData(imgdJulia, 0, 0);		 
+        }
+         
+        function SetPixelColor(pix,offs, a, r, g, b)
+        {            
+            pix[offs++] = r;
+            pix[offs++] = g;
+            pix[offs++] = b;
+            pix[offs] = a;
+        }
+         
+        window.addEventListener( 'load', SetupMandel );
+        
+        </script>    
+</head>
+<body>
+    <span id="fps" style='display:block'></span>
+    <canvas id="JuliaCanvas" width="1024" height="1024">
+	</canvas>
+</body>
+</html>
