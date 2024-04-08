@@ -1,4 +1,4 @@
-# A tiny Rust2WASM vs Javascript contenst
+# A tiny Rust2WASM vs Javascript performance contest
 
 ## Javascript
 
@@ -14,21 +14,5 @@ The Rust2WASM docs are <a href='https://developer.mozilla.org/en-US/docs/WebAsse
 
 ```
 wasm-pack build --target web --release
-```
-
-Shortest Rust code
-
-```
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-extern "C" {
-    pub fn alert(s: &str);
-}
-
-#[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
-}
 ```
 
