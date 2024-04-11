@@ -1,0 +1,98 @@
+<!-- gpu.js, courtesy: Łukasz Piwowar https://github.com/zsacul -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mandelbrot</title>
+    <script src="https://cdn.jsdelivr.net/npm/gpu.js@latest/dist/gpu-browser.min.js"></script>
+	<script type="text/javascript">
+	        
+        var cx = 0.0, cy = 0.0, kat1 = 0.0, kat2 = 1.0;
+                
+        var WJulia = 1024;
+        var HJulia = 1024;
+        var frame  = 0;
+        var startDate;  
+
+        var iStart;
+        var iEnd;
+        var jStart;
+        var jEnd;
+
+        var iDelta;
+        var jDelta;
+
+        if (!GPU.isGPUSupported) { alert('GPU not supported!'); }
+
+        const gpu = new GPU();
+        GPU.enableValidation();
+        
+        function setInitialScale()
+        {
+            iStart = -1.92;
+            iEnd   =  1.92;
+            jStart = -1.92;
+            jEnd   =  1.92;
+
+            iDelta = (iEnd-iStart)/1024.0;
+            jDelta = (jEnd-jStart)/1024.0;
+
+            startDate = new Date();            
+        }
+
+        function SetupMandel()
+        {	 
+            setInitialScale();
+            requestAnimationFrame(LoopMandel);
+        }
+                         
+        function LoopMandel()
+        {	 
+            kat1 += 0.0021;
+            kat2 += 0.0039;
+            cx = .681*Math.sin(kat1);
+            cy = .626*Math.cos(kat2);
+
+            frame++;
+            document.getElementById('fps').innerHTML = `Javascript, fps: ${1000*frame/(new Date()-startDate)}`;
+			
+            RysujMandel();	 
+            requestAnimationFrame( LoopMandel );
+        }
+
+        const RysujMandelGPU = gpu.createKernel(function(iStart, iDelta, jStart, jDelta, cx, cy, WJulia, iterations) 
+        {                        
+            var c = 0;
+            var x = cx;
+            var y = cy;
+            var j = iStart + iDelta*this.thread.y;
+            var i = jStart + jDelta*this.thread.x;
+
+            while ( ((x*x + y*y) < 4) && (c < iterations) )
+            {
+                var _tx = 1.0*x;
+                x = x*x - y*y + i;
+                y = 2.0 * _tx*y + j;                
+                c += 1;
+            }
+
+            this.color(255-c,255-c,255-(c/2));
+        },{
+            output: [1024, 1024],
+            graphical: true,
+        });
+
+        function RysujMandel() 
+        {
+            RysujMandelGPU(iStart, iDelta, jStart, jDelta, cx, cy, WJulia, 255);
+            document.body.appendChild(RysujMandelGPU.canvas);
+        }
+         
+        window.addEventListener( 'load', SetupMandel );
+        
+        </script>    
+</head>
+<body>
+    <span id="fps" style='display:block'></span>
+</body>
+</html>
