@@ -50,4 +50,11 @@ cargo install wasm-pack
 ```
 wasm-pack build --target web --release
 ```
+</ol>
 
+## gpu.js
+
+Yet another version, just to show that moving the computation to GPU (using <a href="https://gpu.rocks/#/">gpu.js</a>) boosts the performance considerably. 
+Check the source here, <a href='mandel_js_gpu.html'>mandel_js_gpu.html</a>.
+
+Thanks to <a href="https://github.com/zsacul">Łukasz Piwowar</a> for pointing out this possibility and porting the code.
