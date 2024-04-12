@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Mandelbrot</title>
+	<!--
     <script src="https://cdn.jsdelivr.net/npm/gpu.js@latest/dist/gpu-browser.min.js"></script>
+	-->
+    <script src="dist/gpu-browser.min.js"></script>
 	<script type="text/javascript">
 	        
         var cx = 0.0, cy = 0.0, kat1 = 0.0, kat2 = 1.0;
@@ -22,10 +25,10 @@
         var iDelta;
         var jDelta;
 
-        if (!GPU.isGPUSupported) { alert('GPU not supported!'); }
+        if (!GPUFix.isGPUSupported) { alert('GPU not supported!'); }
 
-        const gpu = new GPU();
-        GPU.enableValidation();
+        const gpu = new GPUFix();
+        GPUFix.enableValidation();
         
         function setInitialScale()
         {
