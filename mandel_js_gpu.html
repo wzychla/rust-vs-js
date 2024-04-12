@@ -78,11 +78,12 @@
                 y = 2.0 * _tx*y + j;                
                 c += 1;
             }
-
-            this.color(255-c,255-c,255-(c/2));
+			
+            this.color((255-c)/255.0,(255-c)/255.0,(255-(c/2))/255.0);
         },{
             output: [1024, 1024],
             graphical: true,
+            precision: 'unsigned'
         });
 
         function RysujMandel() 
